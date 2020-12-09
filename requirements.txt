@@ -1,0 +1,5 @@
+bs4
+lxml
+html5lib
+geopandas==0.8.1
+descartes
