@@ -6,13 +6,17 @@ import dash  # (version 1.12.0) pip install dash
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
-
+import urllib
+from urllib.error import HTTPError
 app = dash.Dash(__name__)
 
 # ---------- Import and clean data (importing csv into pandas)
 # df = pd.read_csv("intro_bees.csv")
-df = pd.read_csv("https://raw.githubusercontent.com/Mike-Xie/US_Salaries/main/salaries.csv")
-
+try:
+    df = pd.read_csv("https://raw.githubusercontent.com/Mike-Xie/US_Salaries/main/salaries.csv")
+except(urllib.error.HTTPError):
+    # "Do something if fails"
+    pass
 # df = df.groupby(['State', 'ANSI', 'Affected by', 'Year', 'state_code'])[['Pct of Colonies Impacted']].mean()
 df.reset_index(inplace=True)
 print(df[:5])
