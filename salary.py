@@ -6,20 +6,20 @@ import dash  # (version 1.12.0) pip install dash
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
-import urllib
-from urllib.error import HTTPError
+# import urllib
+# from urllib.error import HTTPError
 app = dash.Dash(__name__)
 
 # ---------- Import and clean data (importing csv into pandas)
-# df = pd.read_csv("intro_bees.csv")
-try:
-    df = pd.read_csv("https://raw.githubusercontent.com/Mike-Xie/US_Salaries/main/salaries.csv")
-except(urllib.error.HTTPError):
-    # "Do something if fails"
-    pass
-# df = df.groupby(['State', 'ANSI', 'Affected by', 'Year', 'state_code'])[['Pct of Colonies Impacted']].mean()
-df.reset_index(inplace=True)
-print(df[:5])
+# # df = pd.read_csv("intro_bees.csv")
+# try:
+#     df = pd.read_csv("https://raw.githubusercontent.com/Mike-Xie/US_Salaries/main/salaries.csv")
+# except(urllib.error.HTTPError):
+#     # "Do something if fails"
+#     pass
+# # df = df.groupby(['State', 'ANSI', 'Affected by', 'Year', 'state_code'])[['Pct of Colonies Impacted']].mean()
+# df.reset_index(inplace=True)
+# print(df[:5])
 
 # ------------------------------------------------------------------------------
 # App layout
@@ -37,6 +37,11 @@ app.layout = html.Div([
                  value="Data_Science",
                  style={'width': "40%"}
                  ),
+    dcc.Input(
+        id="input_job_title",
+        type="search",
+        placeholder="job title",
+    ),
 
     html.Div(id='output_container', children=[]),
     html.Br(),
@@ -51,14 +56,14 @@ app.layout = html.Div([
 @app.callback(
     [Output(component_id='output_container', component_property='children'),
      Output(component_id='my_bee_map', component_property='figure')],
-    [Input(component_id='slct_year', component_property='value')]
+    Input(component_id='slct_year', component_property='value'),
+    Input(component_id='input_job_title', component_property='value')
 )
-def update_graph(option_slctd):
+def update_graph(option_slctd, job_title):
     print(option_slctd)
     print(type(option_slctd))
 
     container = "The job chosen by user was: {}".format(option_slctd)
-
     dff = df.copy()
    # dff = dff[dff["Year"] == option_slctd]
    # dff = dff[dff["Affected by"] == "Varroa_mites"]
@@ -94,7 +99,7 @@ def update_graph(option_slctd):
     #     geo=dict(scope='usa'),
     # )
 
-    return container, fig
+    return container, fig, job_title
 
 
 # ------------------------------------------------------------------------------
