@@ -1,14 +1,15 @@
 import pandas as pd 
+import requests
 from typing import List 
 
 """
-    Function that takes a job title and returns a dataframe
+    Static Function that takes a job title and returns a dataframe
     with the average salary by state.
 
 """
 
 def get_table_for_job_title(job_name: str) -> pd.DataFrame:
-    job_name = job_name.replace(" ", "-")
+    query = job_name.replace(" ", "-")
     job_url = "https://ziprecruiter.com/Salaries/What-Is-the-Average-" + query + "-Salary-by-State"
     job_response = requests.get(job_url, timeout=10)
     print(job_url)
@@ -26,7 +27,7 @@ def get_table_for_job_title(job_name: str) -> pd.DataFrame:
 """
 
 def job_title_has_data(job_name: str) -> bool:
-    job_name = job_name.replace(" ", "-")
+    query = job_name.replace(" ", "-")
     job_url = "https://ziprecruiter.com/Salaries/What-Is-the-Average-" + query + "-Salary-by-State"
     job_response = requests.get(job_url, timeout=10)
     print(job_url)
@@ -39,7 +40,7 @@ def job_title_has_data(job_name: str) -> bool:
         return True
 
 """
-    Static function to pull Value of a Dollar table from patriotsoftware which 
+    Static Function to pull Value of a Dollar table from patriotsoftware which 
     we join and multiply on the salary by state to find dollar adjusted jobs 
 """
 
