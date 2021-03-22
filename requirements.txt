@@ -1,5 +1,9 @@
+pandas
 bs4
 lxml
 html5lib
 descartes
 geopandas
+plotly
+dash
+matplotlib
