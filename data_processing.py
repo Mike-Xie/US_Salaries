@@ -8,7 +8,7 @@ from typing import List
 
 """
 
-def get_table_for_job_title(job_name: str) -> pd.DataFrame:
+def get_salary_table_for_job_title(job_name: str) -> pd.DataFrame:
     query = job_name.replace(" ", "-")
     job_url = "https://ziprecruiter.com/Salaries/What-Is-the-Average-" + query + "-Salary-by-State"
     job_response = requests.get(job_url, timeout=10)
@@ -55,7 +55,6 @@ def get_ppp_table():
     # ppp_table.to_csv("usa_ppe_by_state.csv", index=False)
     # print(type(ppp_table))
     return ppp_table
-
 
 """
     Pre-processing function to replace $ value strings with floats so we can perform arithmetic on dataframes 
