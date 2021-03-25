@@ -29,7 +29,7 @@ app.layout = html.Div([
 
     html.H1("Web Application Dashboards with Dash", style={'text-align': 'center'}),
 
-    dcc.Dropdown(id="slct_year",
+    dcc.Dropdown(id="select_job_title",
                  options=[
                   #   {"label": "2015", "value": 2015},
                   #   {"label": "2016", "value": 2016},
@@ -40,10 +40,10 @@ app.layout = html.Div([
                  style={'width': "40%"}
                  ),
 
-    html.Div(id='output_container', children=[]),
+    html.Div(id='job_title_label', children=[]),
     html.Br(),
 
-    dcc.Graph(id='my_bee_map', figure={})
+    dcc.Graph(id='plotly_display_element', figure={})
 
 ])
 
@@ -51,9 +51,9 @@ app.layout = html.Div([
 # ------------------------------------------------------------------------------
 # Connect the Plotly graphs with Dash Components
 @app.callback(
-    [Output(component_id='output_container', component_property='children'),
-     Output(component_id='my_bee_map', component_property='figure')],
-    [Input(component_id='slct_year', component_property='value')]
+    [Output(component_id='job_title_label', component_property='children'),
+     Output(component_id='plotly_display_element', component_property='figure')],
+    [Input(component_id='select_job_title', component_property='value')]
 )
 def update_graph(option_slctd):
     dprint(option_slctd)
