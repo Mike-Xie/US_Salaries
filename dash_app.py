@@ -29,6 +29,11 @@ app.layout = html.Div([
 
     html.H1("Web Application Dashboards with Dash", style={'text-align': 'center'}),
 
+    # TODO: make this a search box 
+    # (https://www.youtube.com/watch?v=VZ6IdRMc0RI&ab_channel=CharmingData) 
+    # not dropdown, if we want dropdown for something else, use this: 
+    # https://dash.plotly.com/pattern-matching-callbacks
+
     dcc.Dropdown(id="select_job_title",
                  options=[
                   #   {"label": "2015", "value": 2015},
