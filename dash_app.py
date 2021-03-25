@@ -1,3 +1,5 @@
+from debug_tools import *
+
 import pandas as pd
 import plotly.express as px  # (version 4.7.0)
 import plotly.graph_objects as go
@@ -19,7 +21,7 @@ except(urllib.error.HTTPError):
     pass
 # df = df.groupby(['State', 'ANSI', 'Affected by', 'Year', 'state_code'])[['Pct of Colonies Impacted']].mean()
 df.reset_index(inplace=True)
-print(df[:5])
+dprint(df[:5])
 
 # ------------------------------------------------------------------------------
 # App layout
@@ -54,8 +56,8 @@ app.layout = html.Div([
     [Input(component_id='slct_year', component_property='value')]
 )
 def update_graph(option_slctd):
-    print(option_slctd)
-    print(type(option_slctd))
+    dprint(option_slctd)
+    dprint(type(option_slctd))
 
     container = "The job chosen by user was: {}".format(option_slctd)
 

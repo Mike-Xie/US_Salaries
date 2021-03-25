@@ -13,7 +13,7 @@ def get_salary_table_for_job_title(job_name: str) -> pd.DataFrame:
     query = job_name.replace(" ", "-")
     job_url = "https://ziprecruiter.com/Salaries/What-Is-the-Average-" + query + "-Salary-by-State"
     job_response = requests.get(job_url, timeout=10)
-    print(job_url)
+    dprint(job_url)
     
     if "ind=null" in job_response.url or "Moved Permanently" in job_response.url:
         return False
@@ -30,15 +30,12 @@ def get_salary_table_for_job_title(job_name: str) -> pd.DataFrame:
 """
 
 def get_ppp_table():
-    # ppe url table and response 
     ppp_url = "https://www.patriotsoftware.com/blog/accounting/average-cost-living-by-state/"
     ppp_response = requests.get(ppp_url, timeout=10)
     dprint(ppp_response)
     ppp_text: List[pd.DataFrame] = pd.read_html(ppp_response.text, header=0)
     ppp_table: pd.DataFrame = pd.concat(ppp_text)
     dprint(ppp_table.head())
-    # ppp_table.to_csv("usa_ppe_by_state.csv", index=False)
-    # print(type(ppp_table))
     return ppp_table
 
 """
