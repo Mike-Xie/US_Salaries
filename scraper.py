@@ -1,3 +1,4 @@
+import debug_tools
 import pandas as pd 
 import requests
 from typing import List 
@@ -32,10 +33,10 @@ def get_ppp_table():
     # ppe url table and response 
     ppp_url = "https://www.patriotsoftware.com/blog/accounting/average-cost-living-by-state/"
     ppp_response = requests.get(ppp_url, timeout=10)
-    # print(ppp_response)
+    dprint(ppp_response)
     ppp_text: List[pd.DataFrame] = pd.read_html(ppp_response.text, header=0)
     ppp_table: pd.DataFrame = pd.concat(ppp_text)
-    # print(ppp_table.head())
+    dprint(ppp_table.head())
     # ppp_table.to_csv("usa_ppe_by_state.csv", index=False)
     # print(type(ppp_table))
     return ppp_table
