@@ -27,9 +27,10 @@ def get_salary_table_for_job_title(job_name: str) -> pd.DataFrame:
 """
     Static Function to pull Value of a Dollar table from patriotsoftware which 
     we join and multiply on the salary by state to find dollar adjusted jobs 
+    * TODO: cache this somewhere
 """
 
-def get_ppp_table():
+def get_ppp_table() -> pd.DataFrame:
     ppp_url = "https://www.patriotsoftware.com/blog/accounting/average-cost-living-by-state/"
     ppp_response = requests.get(ppp_url, timeout=10)
     dprint(ppp_response)
@@ -38,11 +39,4 @@ def get_ppp_table():
     dprint(ppp_table.head())
     return ppp_table
 
-"""
-    Pre-processing function to replace $ value strings with floats so we can perform arithmetic on dataframes 
-"""
-def replace_dollar_with_float(df):
-    
-    df = df.set_index('State').apply(lambda x: (x.str.replace('[$,]', '').astype(float)))
 
-    return df 
