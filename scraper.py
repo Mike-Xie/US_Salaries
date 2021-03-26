@@ -11,7 +11,10 @@ from debug_tools import dprint
 """
 
 def get_salary_table_for_job_title(job_name: str) -> pd.DataFrame:
-    query = job_name.replace(" ", "-")
+    if(job_name):
+        query = job_name.replace(" ", "-")
+    else:
+        return False
     job_url = "https://ziprecruiter.com/Salaries/What-Is-the-Average-" + query + "-Salary-by-State"
     job_response = requests.get(job_url, timeout=10)
     dprint(job_url)
