@@ -9,13 +9,18 @@ us_state_abbrev = {
 """
 def replace_dollar_with_float(df: pd.DataFrame) -> pd.DataFrame:
     
-    df = df.set_index('State').apply(lambda x: (x.str.replace('[$,]', '').astype(float)))
+    if(not type(df) is pd.DataFrame):
+        return False
+
+    df = df.apply(lambda x: (x.str.replace('[$,]', '').astype(float)))
 
     return df 
 
 def engineer_features(base_salary_table: pd.DataFrame, ppp_table: pd.DataFrame) -> pd.DataFrame:
 
-    # pre-process 
+    # pre-process
+    base_salary_table = base_salary_table.set_index('State')
+    ppp_table = ppp_table.set_index('State')
     base_salary_table = replace_dollar_with_float(base_salary_table)
     ppp_table = replace_dollar_with_float(ppp_table)
     adjusted_salary_table = base_salary_table.join(ppp_table)
@@ -33,6 +38,6 @@ def engineer_features(base_salary_table: pd.DataFrame, ppp_table: pd.DataFrame) 
 
 
     index = adjusted_salary_table.index.map(us_state_abbrev)
-    adjusted_salary_table['state initial'] = index 
+    adjusted_salary_table['State Initial'] = index 
     # adjusted_salary_table.to_csv('salaries.csv')
     return adjusted_salary_table

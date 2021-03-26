@@ -13,6 +13,7 @@ pandas = "*"
 plotly = "*"
 dash = "*"
 matplotlib = "*"
+pytest = "*"
 
 [dev-packages]
 

@@ -1,4 +1,7 @@
 from debug_tools import *
+import scraper
+import data_io
+import clean_data
 
 import pandas as pd
 import plotly.express as px  # (version 4.7.0)
@@ -13,15 +16,22 @@ from urllib.error import HTTPError
 app = dash.Dash(__name__)
 
 # ---------- Import and clean data (importing csv into pandas)
-# df = pd.read_csv("intro_bees.csv")
-try:
-    df = pd.read_csv("https://raw.githubusercontent.com/Mike-Xie/US_Salaries/main/salaries.csv")
-except(urllib.error.HTTPError):
-    # "Do something if fails"
-    pass
-# df = df.groupby(['State', 'ANSI', 'Affected by', 'Year', 'state_code'])[['Pct of Colonies Impacted']].mean()
-df.reset_index(inplace=True)
-dprint(df[:5])
+# try:
+#     df = pd.read_csv("https://raw.githubusercontent.com/Mike-Xie/US_Salaries/main/salaries.csv")
+# except(urllib.error.HTTPError):
+#     pass
+# df.reset_index(inplace=True)
+# dprint(df[:5])
+
+def get_salary_table_for_job_title(job_title: str):
+    salary_data = scraper.get_salary_table_for_job_title(job_title)
+    if (type(salary_data) == pd.DataFrame):
+        ppp = scraper.get_ppp_table()
+        return clean_data.engineer_features(salary_data, ppp)
+    else:
+        return None
+
+# salary_graph = False
 
 # ------------------------------------------------------------------------------
 # App layout
@@ -51,11 +61,13 @@ app.layout = html.Div([
         debounce=True,
         style={'text-align':'center'},
         )],
-        style={'text-align':'center'}),
+        style={'text-align':'center'},
+    ),
 
     html.H3(id='job_title_label', children=[], style={'text-align': 'center'}),
     html.Br(),
 
+    # dcc.Graph(id='plotly_display_element', figure={}) if salary_graph else html.H2("Enter a job title!", style={'text-align': 'center'}),
     dcc.Graph(id='plotly_display_element', figure={})
 
 ])
@@ -77,42 +89,36 @@ def update_graph(search_box_input):
     dprint(search_box_input)
     dprint(type(search_box_input))
 
-    container = "Viewing {} salaries".format(search_box_input) if search_box_input else "Enter a job title!"
+    container = "Showing {} salaries.".format(search_box_input) if search_box_input else "Showing median over all occupations. Enter a job title for specifics."
 
-    dff = df.copy()
-   # dff = dff[dff["Year"] == search_box_input]
-   # dff = dff[dff["Affected by"] == "Varroa_mites"]
+    df = get_salary_table_for_job_title(search_box_input)
 
-    # Plotly Express
-    fig = px.choropleth(
-        data_frame=dff,
-        locationmode='USA-states',
-        locations='state initial',
-        scope="usa",
-        color='Adjusted Annual Salary',
-        hover_data=['State', 'Adjusted Annual Salary'],
-        color_continuous_scale=px.colors.sequential.YlOrRd,
-        labels={'Adjusted Annual Salary': 'Annual Salary Adjusted for Purchasing Power'},
-        template='plotly_dark'
-    )
-
-    # Plotly Graph Objects (GO)
-    # fig = go.Figure(
-    #     data=[go.Choropleth(
-    #         locationmode='USA-states',
-    #         locations=dff['state_code'],
-    #         z=dff["Pct of Colonies Impacted"].astype(float),
-    #         colorscale='Reds',
-    #     )]
-    # )
-    #
-    # fig.update_layout(
-    #     title_text="Bees Affected by Mites in the USA",
-    #     title_xanchor="center",
-    #     title_font=dict(size=24),
-    #     title_x=0.5,
-    #     geo=dict(scope='usa'),
-    # )
+    if (type(df) == pd.DataFrame):
+        dprint (df.head())
+        # Plotly Express
+        fig = px.choropleth(
+            data_frame=df,
+            locationmode='USA-states',
+            locations='State Initial',
+            scope="usa",
+            color='Adjusted Annual Salary',
+            hover_data=['State Initial', 'Adjusted Annual Salary'],
+            color_continuous_scale=px.colors.sequential.YlOrRd,
+            labels={'Adjusted Annual Salary': 'Annual Salary Adjusted for Purchasing Power'},
+            template='plotly_dark'
+        )
+    else:
+        fig = px.choropleth(
+            data_frame=get_salary_table_for_job_title('programmer'),
+            locationmode='USA-states',
+            locations='State Initial',
+            scope="usa",
+            color='Annual Mean Wage (All Occupations)',
+            hover_data=['State Initial', 'Annual Mean Wage (All Occupations)'],
+            color_continuous_scale=px.colors.sequential.YlOrRd,
+            labels={'Adjusted Annual Salary': 'Annual Salary Adjusted for Purchasing Power'},
+            template='plotly_dark'
+        )
 
     return container, fig, 
 
