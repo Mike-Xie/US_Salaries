@@ -27,25 +27,33 @@ dprint(df[:5])
 # App layout
 app.layout = html.Div([
 
-    html.H1("Web Application Dashboards with Dash", style={'text-align': 'center'}),
+    html.H1("Salary Adjusted by Purchasing Price Parity", style={'text-align': 'center'}),
 
     # TODO: make this a search box 
     # (https://www.youtube.com/watch?v=VZ6IdRMc0RI&ab_channel=CharmingData) 
     # not dropdown, if we want dropdown for something else, use this: 
     # https://dash.plotly.com/pattern-matching-callbacks
 
-    dcc.Dropdown(id="select_job_title",
-                 options=[
-                  #   {"label": "2015", "value": 2015},
-                  #   {"label": "2016", "value": 2016},
-                  #   {"label": "2017", "value": 2017},
-                     {"label": "Data Science", "value": "Data_Science"}],
-                 multi=False,
-                 value="Data_Science",
-                 style={'width': "40%"}
-                 ),
+    # dcc.Dropdown(id="select_job_title",
+    #              options=[
+    #               #   {"label": "2015", "value": 2015},
+    #               #   {"label": "2016", "value": 2016},
+    #               #   {"label": "2017", "value": 2017},
+    #                  {"label": "Data Science", "value": "Data_Science"}],
+    #              multi=False,
+    #              value="Data_Science",
+    #              style={'width': "40%"}
+    #              ),
+    html.Div([dcc.Input(
+        id="job_title_search",
+        type="search",
+        placeholder="job title",
+        debounce=True,
+        style={'text-align':'center'},
+        )],
+        style={'text-align':'center'}),
 
-    html.Div(id='job_title_label', children=[]),
+    html.H3(id='job_title_label', children=[], style={'text-align': 'center'}),
     html.Br(),
 
     dcc.Graph(id='plotly_display_element', figure={})
@@ -56,18 +64,23 @@ app.layout = html.Div([
 # ------------------------------------------------------------------------------
 # Connect the Plotly graphs with Dash Components
 @app.callback(
-    [Output(component_id='job_title_label', component_property='children'),
-     Output(component_id='plotly_display_element', component_property='figure')],
-    [Input(component_id='select_job_title', component_property='value')]
+    [
+        Output(component_id='job_title_label', component_property='children'),
+        Output(component_id='plotly_display_element', component_property='figure'),
+     ],
+    # [Input(component_id='select_job_title', component_property='value'),
+    [
+        Input(component_id='job_title_search', component_property='value')
+    ],
 )
-def update_graph(option_slctd):
-    dprint(option_slctd)
-    dprint(type(option_slctd))
+def update_graph(search_box_input):
+    dprint(search_box_input)
+    dprint(type(search_box_input))
 
-    container = "The job chosen by user was: {}".format(option_slctd)
+    container = "Viewing {} salaries".format(search_box_input) if search_box_input else "Enter a job title!"
 
     dff = df.copy()
-   # dff = dff[dff["Year"] == option_slctd]
+   # dff = dff[dff["Year"] == search_box_input]
    # dff = dff[dff["Affected by"] == "Varroa_mites"]
 
     # Plotly Express
@@ -101,7 +114,7 @@ def update_graph(option_slctd):
     #     geo=dict(scope='usa'),
     # )
 
-    return container, fig
+    return container, fig, 
 
 
 # ------------------------------------------------------------------------------
