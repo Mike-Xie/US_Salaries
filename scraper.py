@@ -1,7 +1,8 @@
-import debug_tools
 import pandas as pd 
 import requests
 from typing import List 
+
+from debug_tools import dprint
 
 """
     Function that takes as input a job title and returns a dataframe
