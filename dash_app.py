@@ -31,7 +31,18 @@ app.layout = html.Div([
     dcc.Graph(id='plotly_display_element', figure={})
 ])
 
-search_box_input_cache = ""
+def get_ppp_graph():
+    return px.choropleth(
+        data_frame=retrieve_data.get_salary_table_for_job_title('programmer'),
+        locationmode='USA-states',
+        locations='State Initial',
+        scope="usa",
+        color='Annual Mean Wage (All Occupations)',
+        hover_data=['State Initial', 'Annual Mean Wage (All Occupations)'],
+        color_continuous_scale=px.colors.sequential.YlOrRd,
+        labels={'Adjusted Annual Salary': 'Annual Salary Adjusted for Purchasing Power'},
+        template='plotly_dark'
+    )
 
 # ------------------------------------------------------------------------------
 # Connect the Plotly graphs with Dash Components
@@ -46,40 +57,43 @@ search_box_input_cache = ""
 )
 def update_graph(search_box_input):
     dprint(search_box_input)
-    dprint(type(search_box_input))
-    df = retrieve_data.get_salary_table_for_job_title(search_box_input)
-    container = "Showing {} salaries.".format(search_box_input) if search_box_input else "Showing median over all occupations. Enter a job title for specifics."
-    if (search_box_input and type(df) != pd.DataFrame):
-        container = "No data for {} salaries, showing median salary over all occupations.".format(search_box_input)
-    if (type(df) == pd.DataFrame):
-        dprint (df.head())
-        fig = px.choropleth(
-            data_frame=df,
-            locationmode='USA-states',
-            locations='State Initial',
-            scope="usa",
-            color='Adjusted Annual Salary',
-            hover_data=['State Initial', 'Adjusted Annual Salary'],
-            color_continuous_scale=px.colors.sequential.YlOrRd,
-            labels={'Adjusted Annual Salary': 'Annual Salary Adjusted for Purchasing Power'},
-            template='plotly_dark'
-        )
+    search_is_valid = retrieve_data.check_job_search_term(search_box_input) if search_box_input else False
+    if search_is_valid:
+        dprint(f'search {search_box_input} is valid')
+        container = "Showing {} salaries.".format(search_box_input)
+        df = retrieve_data.get_salary_table_for_job_title(search_box_input)
+        valid_entries.append(search_box_input)
+    # empty search box, show ppp map:
+    elif not search_box_input:
+        valid_entries.append(valid_entries[0])
+        container = "Showing median for all occupations. Enter a job title for specifics."
+        fig = get_ppp_graph()
+        return container, fig
+    # search box is invalid and most recent working graph wasn't ppp map:
+    elif valid_entries[-1] != valid_entries[0]:
+        container = "No data for {} salaries, showing median salary for {}.".format(search_box_input, valid_entries[-1])
+        df = retrieve_data.get_salary_table_for_job_title(valid_entries[-1]) 
+    # search box is invalid and most recent working graph *was* ppp map:
     else:
-        fig = px.choropleth(
-            data_frame=retrieve_data.get_salary_table_for_job_title('programmer'),
-            locationmode='USA-states',
-            locations='State Initial',
-            scope="usa",
-            color='Annual Mean Wage (All Occupations)',
-            hover_data=['State Initial', 'Annual Mean Wage (All Occupations)'],
-            color_continuous_scale=px.colors.sequential.YlOrRd,
-            labels={'Adjusted Annual Salary': 'Annual Salary Adjusted for Purchasing Power'},
-            template='plotly_dark'
-        )
+        container = "No data for {} salaries, showing median salary for {}.".format(search_box_input, valid_entries[-1])
+        fig = get_ppp_graph()
+        return container, fig
         
-
-    return container, fig, 
+    fig = px.choropleth(
+        data_frame=df,
+        locationmode='USA-states',
+        locations='State Initial',
+        scope="usa",
+        color='Adjusted Annual Salary',
+        hover_data=['State Initial', 'Adjusted Annual Salary'],
+        color_continuous_scale=px.colors.sequential.YlOrRd,
+        labels={'Adjusted Annual Salary': 'Annual Salary Adjusted for Purchasing Power'},
+        template='plotly_dark'
+    )
+    return container, fig
 
 # ------------------------------------------------------------------------------
 if __name__ == '__main__':
+    valid_entries = ['all occupations']
     app.run_server(debug=True)
+
