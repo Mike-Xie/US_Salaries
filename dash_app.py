@@ -56,10 +56,10 @@ def get_ppp_graph():
     ],
 )
 def update_graph(search_box_input):
-    dprint(search_box_input)
+    # dprint(search_box_input)
     search_is_valid = retrieve_data.check_job_search_term(search_box_input) if search_box_input else False
     if search_is_valid:
-        dprint(f'search {search_box_input} is valid')
+        # dprint(f'search {search_box_input} is valid')
         container = "Showing {} salaries.".format(search_box_input)
         df = retrieve_data.get_salary_table_for_job_title(search_box_input)
         valid_entries.append(search_box_input)
@@ -78,7 +78,7 @@ def update_graph(search_box_input):
         container = "No data for {} salaries, showing median salary for {}.".format(search_box_input, valid_entries[-1])
         fig = get_ppp_graph()
         return container, fig
-        
+
     fig = px.choropleth(
         data_frame=df,
         locationmode='USA-states',

@@ -11,7 +11,7 @@ def get_salary_table_for_job_title(job_title: str) -> pd.DataFrame:
     ppp = get_ppp_table()
 
     # check if job is cached
-    job_cache_name = f'salaries_{job_title}.csv'
+    job_cache_name = get_job_salary_file_name(job_title)
     # if job is cached and recent enough, read from cache
     # TODO: implement cached file date checking. This should
     # always be true unless the cache is too old, because
@@ -36,6 +36,11 @@ def get_ppp_table() -> pd.DataFrame:
 
 def check_job_search_term(job_name: str) -> bool:
     bad_query_list_file_name = "bad_queries.csv"
+    job_salary_data_file_name = get_job_salary_file_name(job_name)
+
+    # first check if file exists
+    if(data_io.file_exists(job_salary_data_file_name)):
+        return True
 
     # check cached bad searches
     if(data_io.file_exists(bad_query_list_file_name)):
@@ -56,7 +61,7 @@ def check_job_search_term(job_name: str) -> bool:
 
     # if so, return True after saving scraped data if not present already
     if(type(df) == pd.DataFrame):
-        data_io.write_df(df,f'salaries_{job_name}.csv')
+        data_io.write_df(df,job_salary_data_file_name)
         return True
 
     # if scraping doesn't work, save in bad searches and return False
@@ -66,3 +71,6 @@ def check_job_search_term(job_name: str) -> bool:
         # dprint(f'bad_queries after: {bad_queries}')
         data_io.write_list_to_csv(bad_queries, bad_query_list_file_name)
         return False
+
+def get_job_salary_file_name(job_name):
+    return f'salaries_{job_name}.csv'
