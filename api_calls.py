@@ -3,8 +3,6 @@ import data_io
 import json 
 from pandas import json_normalize
 
-# curl 'https://taxee.io/api/v2/calculate/2020' -H 'Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJBUElfS0VZX01BTkFHRVIiLCJodHRwOi8vdGF4ZWUuaW8vdXNlcl9pZCI6IjYwNWUzNDRmZGRkNWQyNTdlMDQxNmI1NCIsImh0dHA6Ly90YXhlZS5pby9zY29wZXMiOlsiYXBpIl0sImlhdCI6MTYxNjc4NjUxMX0.HYCMaMNvSb55jPEHeMXyiGLiIbZXuoCyc93svN8JdZU' -H 'Content-Type: application/x-www-form-urlencoded' --data 'state=NC&filing_status=married&pay_periods=26&pay_rate=116500&exemptions=2'
-
 """
     Returns Federal, FICA and state income taxes for a given state and gross income
     Number arguments such as yearly_gross income, exemption_amount, num_pay_periods need to be read in as strings to the API
@@ -27,29 +25,9 @@ def get_yearly_income_tax(state_initial: str, marital_status: str, yearly_gross_
         'Content-Type' : 'application/x-www-form-urlencoded',
     }
     response = requests.post('https://taxee.io/api/v2/calculate/2020', headers=headers, data=data)
-
-   # print (dir(response))
-   # print (response.json())
-    # for i in response.json().items():
-    #     print(i)
-    #     print("\n")
-    # json = response.json()
-
-    # fica = [item['fica'] for item in json]
-    # federal = [item['federal'] for item in json]
-    # state = [item['state'] for item in json]
-
-    # print (fica, federal, state)
-    # return fica, federal, state
-
-
     json = response.json()
-    print(len(json))
-   # print(json['annual']['fica'])
-    for k, v in json['annual'].items():
-       print(v)
-   # print(json['annual'].items())
-    # return response.json().items()
-
+    df = json_normalize(json)
+    df['state_initial'] = state_initial
+    print(df)
 get_yearly_income_tax("NC", "married", 116500, 2)
 
