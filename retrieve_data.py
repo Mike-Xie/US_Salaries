@@ -3,6 +3,7 @@ import scraper
 import data_io
 import pandas as pd
 from debug_tools import *
+import api_calls
 
 # Note: this is now a dumb function. It does not determine whether
 # the query is good and return False if not. It assumes the query is
@@ -74,3 +75,7 @@ def check_job_search_term(job_name: str) -> bool:
 
 def get_job_salary_file_name(job_name):
     return f'salaries_{job_name}.csv'
+
+def get_income_tax_all_states(salary:int, marital_status:str, exemptions:int) -> pd.DataFrame:
+    # TODO implement tax caching
+    return clean_data.clean_income_tax_data(api_calls.get_yearly_income_tax_all_states(marital_status,salary,exemptions))
