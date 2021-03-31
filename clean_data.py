@@ -1,8 +1,5 @@
 import pandas as pd 
-
-us_state_abbrev = {
-    'Alabama': 'AL','Alaska': 'AK','American Samoa': 'AS','Arizona': 'AZ','Arkansas': 'AR','California': 'CA','Colorado': 'CO','Connecticut': 'CT','Delaware': 'DE','District of Columbia': 'DC','Florida': 'FL','Georgia': 'GA','Guam': 'GU','Hawaii': 'HI','Idaho': 'ID','Illinois': 'IL','Indiana': 'IN','Iowa': 'IA','Kansas': 'KS','Kentucky': 'KY','Louisiana': 'LA','Maine': 'ME','Maryland': 'MD','Massachusetts': 'MA','Michigan': 'MI','Minnesota': 'MN','Mississippi': 'MS','Missouri': 'MO','Montana': 'MT','Nebraska': 'NE','Nevada': 'NV','New Hampshire': 'NH','New Jersey': 'NJ','New Mexico': 'NM','New York': 'NY','North Carolina': 'NC','North Dakota': 'ND','Northern Mariana Islands':'MP','Ohio': 'OH','Oklahoma': 'OK','Oregon': 'OR','Pennsylvania': 'PA','Puerto Rico': 'PR','Rhode Island': 'RI','South Carolina': 'SC','South Dakota': 'SD','Tennessee': 'TN','Texas': 'TX','Utah': 'UT','Vermont': 'VT','Virgin Islands': 'VI','Virginia': 'VA','Washington': 'WA','West Virginia': 'WV','Wisconsin': 'WI','Wyoming': 'WY'
-}
+from us_states_and_territories import states_and_territories
 
 """
     Pre-processing function to replace $ string values with floats so we can perform arithmetic on the dataframes 
@@ -37,7 +34,11 @@ def engineer_features(base_salary_table: pd.DataFrame, ppp_table: pd.DataFrame) 
     adjusted_salary_table['Adjusted Median Salary Minus Rent'] = adjusted_salary_table['Median Salary Minus Rent'] * adjusted_salary_table['Value of a Dollar']
 
 
-    index = adjusted_salary_table.index.map(us_state_abbrev)
+    index = adjusted_salary_table.index.map(states_and_territories)
     adjusted_salary_table['State Initial'] = index 
     # adjusted_salary_table.to_csv('salaries.csv')
     return adjusted_salary_table
+
+def clean_income_tax_data(income_tax_data_all_states: pd.DataFrame) -> pd.DataFrame:
+    df = income_tax_data_all_states.fillna(0)
+    return df

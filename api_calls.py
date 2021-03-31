@@ -1,7 +1,9 @@
 import requests
 import data_io 
 import json 
+import pandas as pd
 from pandas import json_normalize
+from us_states_and_territories import states_only
 
 """
     Returns Federal, FICA and state income taxes for a given state and gross income
@@ -9,7 +11,7 @@ from pandas import json_normalize
     TODO: figure out when to cast dataframe number columns as strings, have it inside of this function for now.
     Pay periods should be 1 if income is annual, 12 if monthly, 26 if bi-weekly, etc. 
 """
-def get_yearly_income_tax(state_initial: str, marital_status: str, yearly_gross_income: int, exemption_amount: int, num_pay_periods: int = 1):
+def get_yearly_income_tax_from_api(state_initial: str, marital_status: str, yearly_gross_income: int, exemption_amount: int, num_pay_periods: int = 1):
     data = {
         'state': state_initial,
         'filing_status': marital_status, 
@@ -25,9 +27,12 @@ def get_yearly_income_tax(state_initial: str, marital_status: str, yearly_gross_
         'Content-Type' : 'application/x-www-form-urlencoded',
     }
     response = requests.post('https://taxee.io/api/v2/calculate/2020', headers=headers, data=data)
-    json = response.json()
-    df = json_normalize(json)
-    df['state_initial'] = state_initial
-    print(df)
-get_yearly_income_tax("NC", "married", 116500, 2)
+    df = json_normalize(response.json())
+    df['State Initial'] = state_initial
+    return df
 
+def get_yearly_income_tax_all_states(marital_status: str, yearly_gross_income: int, exemption_amount: int, num_pay_periods: int = 1):
+    df = pd.DataFrame()
+    for state in states_only:
+        df = df.append(get_yearly_income_tax_from_api(states_only[state],marital_status,yearly_gross_income,exemption_amount,num_pay_periods))
+    return df
