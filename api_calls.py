@@ -1,5 +1,7 @@
 import requests
 import data_io 
+import json 
+from pandas import json_normalize
 
 # curl 'https://taxee.io/api/v2/calculate/2020' -H 'Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJBUElfS0VZX01BTkFHRVIiLCJodHRwOi8vdGF4ZWUuaW8vdXNlcl9pZCI6IjYwNWUzNDRmZGRkNWQyNTdlMDQxNmI1NCIsImh0dHA6Ly90YXhlZS5pby9zY29wZXMiOlsiYXBpIl0sImlhdCI6MTYxNjc4NjUxMX0.HYCMaMNvSb55jPEHeMXyiGLiIbZXuoCyc93svN8JdZU' -H 'Content-Type: application/x-www-form-urlencoded' --data 'state=NC&filing_status=married&pay_periods=26&pay_rate=116500&exemptions=2'
 
@@ -13,9 +15,9 @@ def get_yearly_income_tax(state_initial: str, marital_status: str, yearly_gross_
     data = {
         'state': state_initial,
         'filing_status': marital_status, 
-        'pay_periods': float(num_pay_periods), 
-        'pay_rate': float(yearly_gross_income), 
-        'exemptions': float(exemption_amount)}
+        'pay_periods': num_pay_periods, 
+        'pay_rate': yearly_gross_income, 
+        'exemptions': exemption_amount}
 
     # strip removes newline character at end that is generated from read_csv_to_list
     taxee_key = data_io.read_csv_to_list('secrets/taxee_key')[0].strip()
@@ -26,8 +28,28 @@ def get_yearly_income_tax(state_initial: str, marital_status: str, yearly_gross_
     }
     response = requests.post('https://taxee.io/api/v2/calculate/2020', headers=headers, data=data)
 
-    print (response.json())
-    return response.json()
+   # print (dir(response))
+   # print (response.json())
+    # for i in response.json().items():
+    #     print(i)
+    #     print("\n")
+    # json = response.json()
+
+    # fica = [item['fica'] for item in json]
+    # federal = [item['federal'] for item in json]
+    # state = [item['state'] for item in json]
+
+    # print (fica, federal, state)
+    # return fica, federal, state
+
+
+    json = response.json()
+    print(len(json))
+   # print(json['annual']['fica'])
+    for k, v in json['annual'].items():
+       print(v)
+   # print(json['annual'].items())
+    # return response.json().items()
 
 get_yearly_income_tax("NC", "married", 116500, 2)
 
