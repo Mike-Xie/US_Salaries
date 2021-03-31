@@ -40,7 +40,7 @@ def get_ppp_graph():
         color='Annual Mean Wage (All Occupations)',
         hover_data=['State Initial', 'Annual Mean Wage (All Occupations)'],
         color_continuous_scale=px.colors.sequential.YlOrRd,
-        labels={'Adjusted Annual Salary': 'Annual Salary Adjusted for Purchasing Power'},
+        labels={'Annual Salary': 'Annual Salary Adjusted for Purchasing Power'},
         template='plotly_dark'
     )
 
@@ -84,10 +84,10 @@ def update_graph(search_box_input):
         locationmode='USA-states',
         locations='State Initial',
         scope="usa",
-        color='Adjusted Annual Salary',
-        hover_data=['State Initial', 'Adjusted Annual Salary'],
+        color='Annual Salary',
+        hover_data=['State Initial', 'Annual Salary'],
         color_continuous_scale=px.colors.sequential.YlOrRd,
-        labels={'Adjusted Annual Salary': 'Annual Salary Adjusted for Purchasing Power'},
+        labels={'Annual Salary': 'Annual Salary'},
         template='plotly_dark'
     )
     return container, fig
