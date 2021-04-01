@@ -3,7 +3,8 @@ import data_io
 import json 
 import pandas as pd
 from pandas import json_normalize
-from us_states_and_territories import states_only
+import us_states_and_territories as ussat
+from debug_tools import dprint
 
 """
     Returns Federal, FICA and state income taxes for a given state and gross income
@@ -29,10 +30,14 @@ def get_yearly_income_tax_from_api(state_initial: str, marital_status: str, year
     response = requests.post('https://taxee.io/api/v2/calculate/2020', headers=headers, data=data)
     df = json_normalize(response.json())
     df['State Initial'] = state_initial
+    df['State'] = ussat.states_only_reverse[state_initial]
+    df['Total Annual Tax'] = df['annual.fica.amount'] + df['annual.federal.amount'] + df['annual.state.amount']
+    df['Post Tax Annual Salary'] = df['Total Annual Tax'].apply(lambda x: yearly_gross_income - x)
+    df.fillna(0, inplace=True)
     return df
 
 def get_yearly_income_tax_all_states(marital_status: str, yearly_gross_income: int, exemption_amount: int, num_pay_periods: int = 1):
     df = pd.DataFrame()
-    for state in states_only:
-        df = df.append(get_yearly_income_tax_from_api(states_only[state],marital_status,yearly_gross_income,exemption_amount,num_pay_periods))
+    for state in ussat.states_only:
+        df = df.append(get_yearly_income_tax_from_api(ussat.states_only[state],marital_status,yearly_gross_income,exemption_amount,num_pay_periods))
     return df
