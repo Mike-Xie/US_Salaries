@@ -1,6 +1,7 @@
 import pandas as pd 
 from us_states_and_territories import states_and_territories
 
+
 """
     Pre-processing function to replace $ string values with floats so we can perform arithmetic on the dataframes 
 """
@@ -13,7 +14,7 @@ def replace_dollar_with_float(df: pd.DataFrame) -> pd.DataFrame:
 
     return df 
 
-def engineer_features(base_salary_table: pd.DataFrame, ppp_table: pd.DataFrame) -> pd.DataFrame:
+def engineer_features(base_salary_table: pd.DataFrame, ppp_table: pd.DataFrame, income_tax_table: pd.DataFrame) -> pd.DataFrame:
 
     # pre-process
     base_salary_table = base_salary_table.set_index('State')
@@ -33,10 +34,10 @@ def engineer_features(base_salary_table: pd.DataFrame, ppp_table: pd.DataFrame) 
     adjusted_salary_table['Median Salary Minus Rent'] = adjusted_salary_table['Annual Mean Wage (All Occupations)'] - adjusted_salary_table['Median Yearly Rent']
     adjusted_salary_table['Adjusted Median Salary Minus Rent'] = adjusted_salary_table['Median Salary Minus Rent'] * adjusted_salary_table['Value of a Dollar']
 
-
-    index = adjusted_salary_table.index.map(states_and_territories)
-    adjusted_salary_table['State Initial'] = index 
-    # adjusted_salary_table.to_csv('salaries.csv')
+    # state initial column necessary for plotly geometry arguments & merging with tax API returned values
+    adjusted_salary_table['State Initial'] = adjusted_salary_table.index.map(states_and_territories)
+    adjusted_salary_table.merge(income_tax_table, left_on=['State Initial'], right_on=['State Initial'], how='right', inplace=True)
+    
     return adjusted_salary_table
 
 def clean_income_tax_data(income_tax_data_all_states: pd.DataFrame) -> pd.DataFrame:
