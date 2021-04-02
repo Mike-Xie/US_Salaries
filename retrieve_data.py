@@ -82,7 +82,15 @@ def get_job_salary_file_name(job_name):
 #     return clean_data.clean_income_tax_data(api_calls.get_yearly_income_tax_all_states(marital_status,salary,exemptions))
 
 def get_total_income_tax(state:str, annual_salary:int, marital_status:str = 'single', exemptions:int = 1) -> int:
-    dprint(state)
-    # TODO implement tax caching
-    df = api_calls.get_yearly_income_tax_from_api(states_only[state], marital_status,annual_salary,exemptions)
-    return df['Total Annual Tax'][0] 
+#     dprint(state)
+#     # TODO implement tax caching
+#     df = api_calls.get_yearly_income_tax_from_api(states_only[state], marital_status,annual_salary,exemptions)
+#     print(df)
+#     print(type(df['Total Annual Tax'][0]))
+#     print(df['Total Annual Tax'][0]) 
+#     return df['Total Annual Tax'][0]
+    pass 
+   
+
+
+# get_total_income_tax("Texas", 1000)
