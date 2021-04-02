@@ -1,6 +1,7 @@
 import clean_data
 import scraper
 import data_io
+import engineer_features
 import pandas as pd
 from debug_tools import *
 import api_calls
@@ -19,12 +20,12 @@ def get_salary_table_for_job_title(job_title: str) -> pd.DataFrame:
     # always be true unless the cache is too old, because
     # the query should already be checked with check_job_search_term()
     if(data_io.file_exists(job_cache_name)):
-        return clean_data.engineer_features(data_io.read_df(job_cache_name), ppp)
+        return engineer_features.engineer_features(data_io.read_df(job_cache_name), ppp, api_calls.get_yearly_income_tax_from_api)
     # else, scrape the job, save it in the cache, then return
     else:
         salary_data = scraper.scrape_salary_table_for_job_title(job_title)
         data_io.write_df(salary_data, job_cache_name)
-        return clean_data.engineer_features(salary_data, ppp)
+        return engineer_features.engineer_features(salary_data, ppp, api_calls.get_yearly_income_tax_from_api)
 
 def get_ppp_table() -> pd.DataFrame:
     ppp_name = "ppp_table.csv"
