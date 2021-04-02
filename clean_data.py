@@ -11,11 +11,13 @@ def replace_dollar_with_float(df: pd.DataFrame) -> pd.DataFrame:
     if(not type(df) is pd.DataFrame):
         return False
 
-    dprint('df:')
-    dprint(df.head())
+    # dprint('df:')
+    # dprint(df.head())
     
 
-    df = df.apply(lambda x: x.replace('[$,]', '').astype(float) if '$' in x else x)
+  #  df = df.applymap(lambda x: x.replace('[$,]', '').astype(float) if '$' in x else x)
+    df = df.applymap(lambda x: float(x.replace('$', '').replace(',', '')) if '$' in x else x)
+
 
     return df 
 

@@ -25,12 +25,12 @@ def test_write():
 
 def test_taxee_tax_column_format():
     df = api_calls.get_yearly_income_tax_all_states('single',180000,1)
-    dprint(df).head()
+   # dprint(df).head()
 
 def test_engineer_features():
     raw_salary = scraper.scrape_salary_table_for_job_title('Programmer')
     ppp = scraper.scrape_ppp_table()
-    income_tax_table_function = retrieve_data.get_total_income_tax
+    income_tax_table_function = api_calls.get_yearly_income_tax_from_api
     df = engineer_features(raw_salary, ppp, income_tax_table_function)
     dprint(df.head())
 
