@@ -30,11 +30,16 @@ def get_yearly_income_tax_from_api(state_initial: str, yearly_gross_income: int,
     }
     response = requests.post('https://taxee.io/api/v2/calculate/2020', headers=headers, data=data)
     df = json_normalize(response.json())
+    # sometimes this API returns NaN instead of 0 for states with no taxes
+    df.fillna(0, inplace=True)
+
+    # create additional features
     df['State Initial'] = state_initial
     df['State'] = ussat.states_only_reverse[state_initial]
     df['Total Annual Tax'] = df['annual.fica.amount'] + df['annual.federal.amount'] + df['annual.state.amount']
-    df['Post Tax Annual Salary'] = df['Total Annual Tax'].apply(lambda x: yearly_gross_income - x)
-    df.fillna(0, inplace=True)
+    df['Post Tax Annual Salary'] = df['Total Annual Tax'].apply(lambda total_tax: yearly_gross_income - total_tax)
+    
+    print(df.columns)
     return df
 
 def get_yearly_income_tax_all_states(marital_status: str, yearly_gross_income: int, exemption_amount: int, num_pay_periods: int = 1):
