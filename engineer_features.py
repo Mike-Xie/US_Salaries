@@ -17,16 +17,23 @@ def engineer_features(base_salary_table: pd.DataFrame, ppp_table: pd.DataFrame, 
 
     # need State initials because taxee_api and dash both use them 
     salary_cola_table['State Initial'] = salary_cola_table['State'].map(states.states_only)
-
+    print(salary_cola_table.head())
    # dprint(base_salary_table.dtypes)
 
     # get income tax per state from the salary table
     # TODO: get help from stack overflow on merging each of these 1 row things which are apparently series into
     # salary cola dataframe
-    broken_series = salary_cola_table[['Annual Salary', 'State Initial']].apply(
-        lambda state_row: get_income_tax(state_row['State Initial'], state_row['Annual Salary']), axis=1, result_type='expand'
-    )
-    print(salary_cola_table.head())
+    all_tax_df = salary_cola_table.merge(salary_cola_table[['Annual Salary', 'State Initial']].apply(
+        lambda state_row: pd.Series(get_income_tax(state_row['State Initial'], state_row['Annual Salary']).to_numpy()[0], index=get_income_tax(state_row['State Initial'],state_row['Annual Salary']).columns), axis=1, result_type='expand'
+    ))
+
+    # all_tax_df = df.merge(df[['State','Annual Salary']].apply(
+    #   lambda row: pd.Series(get_taxes_from_api(row['State'],row['Annual Salary']).to_numpy()[0], index=get_taxes_from_api(row['State'],row['Annual Salary']).columns), axis=1
+    #   ))
+
+    print(all_tax_df.head())
+
+    
     # print(type(income_tax_table))
     # print(income_tax_table)
     # net_income_table = salary_cola_table.join(income_tax_table)

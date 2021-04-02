@@ -22,11 +22,18 @@ def test_write():
 #     ppp = scraper.get_ppp_table()
     # clean_data.engineer_features(df, ppp_table, income_tax_table)
     
+def test_get_yearly_income_tax_from_api():
+
+    test = api_calls.get_yearly_income_tax_from_api("TX", 100000)
+    print(type(test))
+    print(test)
+    return test
 
 def test_taxee_tax_column_format():
     df = api_calls.get_yearly_income_tax_all_states('single',180000,1)
    # dprint(df).head()
 
+# commented out for now, exceeded API limit something something 
 def test_engineer_features():
     raw_salary = scraper.scrape_salary_table_for_job_title('Programmer')
     ppp = scraper.scrape_ppp_table()
@@ -34,4 +41,7 @@ def test_engineer_features():
     df = engineer_features(raw_salary, ppp, income_tax_table_function)
     dprint(df.head())
 
-test_engineer_features()
+
+test_get_yearly_income_tax_from_api()
+
+# test_engineer_features()
