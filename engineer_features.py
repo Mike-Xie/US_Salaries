@@ -21,21 +21,19 @@ def engineer_features(base_salary_table: pd.DataFrame, ppp_table: pd.DataFrame, 
    # dprint(base_salary_table.dtypes)
 
     # get income tax per state from the salary table
-    # TODO: get help from stack overflow on merging each of these 1 row things which are apparently series into
     # salary cola dataframe
     all_tax_df = salary_cola_table.merge(salary_cola_table[['Annual Salary', 'State Initial']].apply(
         lambda state_row: pd.Series(get_income_tax(state_row['State Initial'], state_row['Annual Salary']).to_numpy()[0], index=get_income_tax(state_row['State Initial'],state_row['Annual Salary']).columns), axis=1, result_type='expand'
     ))
 
-    # all_tax_df = df.merge(df[['State','Annual Salary']].apply(
-    #   lambda row: pd.Series(get_taxes_from_api(row['State'],row['Annual Salary']).to_numpy()[0], index=get_taxes_from_api(row['State'],row['Annual Salary']).columns), axis=1
-    #   ))
+    # create new features
+    all_tax_df['Total Annual Tax'] = all_tax_df['annual.fica.amount'] + all_tax_df['annual.federal.amount'] + all_tax_df['annual.state.amount']
+    all_tax_df['Post Tax Annual Salary'] = all_tax_df['Total Annual Tax'].apply(lambda total_tax: yearly_gross_income - total_tax)
 
-    print(all_tax_df.head())
+    # dprint(all_tax_all_tax_df.head())
+    return all_tax_df
 
     
-    # print(type(income_tax_table))
-    # print(income_tax_table)
     # net_income_table = salary_cola_table.join(income_tax_table)
 
     # # state initial column necessary for plotly geometry arguments & merging with tax API returned values
