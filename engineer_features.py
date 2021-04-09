@@ -3,6 +3,7 @@ import us_states_and_territories as states
 from clean_data import replace_dollar_with_float
 from debug_tools import dprint
 from api_calls import get_yearly_income_tax_from_api
+from math import floor
 
 def engineer_features(base_salary_table: pd.DataFrame, ppp_table: pd.DataFrame, get_income_tax) -> pd.DataFrame:
 
@@ -29,7 +30,9 @@ def engineer_features(base_salary_table: pd.DataFrame, ppp_table: pd.DataFrame, 
 
     # create new features
     all_tax_df['Total Annual Tax'] = all_tax_df['annual.fica.amount'] + all_tax_df['annual.federal.amount'] + all_tax_df['annual.state.amount']
-    all_tax_df['Post Tax Annual Salary'] = all_tax_df['Annual Salary'] - all_tax_df['Total Annual Tax']
+    all_tax_df['Post Tax Annual Salary'] = (all_tax_df['Annual Salary'] - all_tax_df['Total Annual Tax'])
+    all_tax_df['Post Tax Annual Salary'] = all_tax_df['Post Tax Annual Salary'].astype(int).apply(lambda x: floor(x / 100) * 100)
+    all_tax_df['Annual Salary Rounded'] = all_tax_df['Annual Salary'].apply(lambda x: floor(x/100) / 10).astype(str).apply(lambda s: s+'k')
 
     # dprint(all_tax_all_tax_df.head())
     return all_tax_df
