@@ -20,12 +20,12 @@ def get_salary_table_for_job_title(job_title: str) -> pd.DataFrame:
     # always be true unless the cache is too old, because
     # the query should already be checked with check_job_search_term()
     if(data_io.file_exists(job_cache_name)):
-        return engineer_features.engineer_features(data_io.read_df(job_cache_name), ppp, api_calls.get_yearly_income_tax_from_api)
+        return engineer_features.engineer_features(data_io.read_df(job_cache_name), ppp, get_income_tax)
     # else, scrape the job, save it in the cache, then return
     else:
         salary_data = scraper.scrape_salary_table_for_job_title(job_title)
         data_io.write_df(salary_data, job_cache_name)
-        return engineer_features.engineer_features(salary_data, ppp, api_calls.get_yearly_income_tax_from_api)
+        return engineer_features.engineer_features(salary_data, ppp, get_income_tax)
 
 def get_ppp_table() -> pd.DataFrame:
     ppp_name = "ppp_table.csv"
@@ -82,16 +82,24 @@ def get_job_salary_file_name(job_name):
 #     # TODO implement tax caching
 #     return clean_data.clean_income_tax_data(api_calls.get_yearly_income_tax_all_states(marital_status,salary,exemptions))
 
-def get_total_income_tax(state:str, annual_salary:int, marital_status:str = 'single', exemptions:int = 1) -> int:
+def get_yearly_income_tax_from_api(state_initial: str, yearly_gross_income: int, exemption_amount: int = 1, marital_status: str = 'single', num_pay_periods: int = 1):
+def get_total_income_tax(state_initial:str, annual_salary:int, exemptions:int = 1, marital_status:str = 'single', num_pay_periods: int = 1) -> int:
 #     dprint(state)
 #     # TODO implement tax caching
-#     df = api_calls.get_yearly_income_tax_from_api(states_only[state], marital_status,annual_salary,exemptions)
-#     print(df)
-#     print(type(df['Total Annual Tax'][0]))
-#     print(df['Total Annual Tax'][0]) 
-#     return df['Total Annual Tax'][0]
-    pass 
-   
+    api_calls.get_yearly_income_tax_from_api(state_initial,annual_salary, exemptions, marital_status)
 
+    # check if job is cached
+    job_cache_name = get_job_salary_file_name(job_title)
+    # if job is cached and recent enough, read from cache
+    # TODO: implement cached file date checking. This should
+    # always be true unless the cache is too old, because
+    # the query should already be checked with check_job_search_term()
+    if(data_io.file_exists(job_cache_name)):
+        return engineer_features.engineer_features(data_io.read_df(job_cache_name), ppp, api_calls.get_yearly_income_tax_from_api)
+    # else, scrape the job, save it in the cache, then return
+    else:
+        salary_data = scraper.scrape_salary_table_for_job_title(job_title)
+        data_io.write_df(salary_data, job_cache_name)
+        return engineer_features.engineer_features(salary_data, ppp, api_calls.get_yearly_income_tax_from_api)
 
 # get_total_income_tax("Texas", 1000)

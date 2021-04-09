@@ -2,7 +2,7 @@ import pandas as pd
 import us_states_and_territories as states
 from clean_data import replace_dollar_with_float
 from debug_tools import dprint
-from api_calls import get_yearly_income_tax_from_api
+# from api_calls import get_yearly_income_tax_from_api
 from math import floor
 
 def engineer_features(base_salary_table: pd.DataFrame, ppp_table: pd.DataFrame, get_income_tax) -> pd.DataFrame:
