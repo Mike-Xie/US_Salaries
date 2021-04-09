@@ -37,10 +37,10 @@ def get_ppp_graph():
         locationmode='USA-states',
         locations='State Initial',
         scope="usa",
-        color='Annual Mean Wage (All Occupations)',
-        hover_data=['State Initial', 'Annual Mean Wage (All Occupations)'],
+        color='Post Tax Annual Salary',
+        hover_data=['State Initial', 'Annual Salary Rounded', 'Post Tax Annual Salary'],
         color_continuous_scale=px.colors.sequential.YlOrRd,
-        labels={'Annual Salary': 'Annual Salary Adjusted for Purchasing Power'},
+        labels={'Post Tax Annual Salary': 'Annual Take-Home Salary'},
         template='plotly_dark'
     )
 
@@ -84,10 +84,10 @@ def update_graph(search_box_input):
         locationmode='USA-states',
         locations='State Initial',
         scope="usa",
-        color='Annual Salary',
-        hover_data=['State Initial', 'Annual Salary'],
+        color='Post Tax Annual Salary',
+        hover_data=['State Initial', 'Post Tax Annual Salary'],
         color_continuous_scale=px.colors.sequential.YlOrRd,
-        labels={'Annual Salary': 'Annual Salary'},
+        labels={'Post Tax Annual Salary': 'Post Tax Annual Salary'},
         template='plotly_dark'
     )
     return container, fig
