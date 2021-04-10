@@ -91,21 +91,33 @@ def get_income_tax(state_initial:str, annual_salary:int, exemptions:int = 1, mar
 #     dprint(state)
 #     # TODO read cache only once
 
-    # check if tax file exists else call api and store result for adding to cache later
+    # check if tax file exists else call api and read it if so for adding to cache later
     tax_cache_name = get_tax_cache_file_name()
-    tax_cache_df = pd.DataFrame()
+    # annual.fica.amount  annual.federal.amount  annual.state.amount State Initial       State
+    tax_cache_df = pd.DataFrame(columns=['annual.fica.amount','annual.federal.amount','annual.state.amount','State Initial','State']) 
     if(data_io.file_exists(tax_cache_name)):
+        dprint('tax cache file exists, reading...')
         # if file does exist, read it into tax_cache_df and check if it contains the data
         tax_cache_df = data_io.read_df(tax_cache_name)
+        dprint('read into tax cache the following:')
+        dprint(tax_cache_df.head())
         try: 
-            row = df.loc[[(df['State Initial'] == state_initial) & (floor_hundred(df['Annual Salary']) == floor_hundred(annual_salary))]]
+            s = f'trying to read ({state_initial}, {floor_hundred(annual_salary)}) from cache...'
+            row = tax_cache_df.loc[[(tax_cache_df['State Initial'] == state_initial) & (floor_hundred(tax_cache_df['Annual Salary']) == floor_hundred(annual_salary))]]
             # exists in cache
+            dprint('no error thrown, exists in cache')
             return row
         except KeyError:
+            dprint('error thrown, not in cache, reading from API instead...')
             pass
     # file doesn't exist or data doesn't exist in cache, so call API, append to tax_cache_df, and write to file
     row = api_calls.get_yearly_income_tax_from_api(state_initial,annual_salary, exemptions, marital_status)
-    tax_cache_df.append(row)
+    dprint('read from API:')
+    dprint(row.head())
+    tax_cache_df.append(row, ignore_index=True)
+    dprint('tax cache with new row appended:')
+    dprint(tax_cache_df.head())
+    dprint('writing df to file...')
     data_io.write_df(tax_cache_df, tax_cache_name)
     return tax_cache_df
 
