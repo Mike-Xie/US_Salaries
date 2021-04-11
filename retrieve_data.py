@@ -1,4 +1,4 @@
-import clean_data
+from clean_data import replace_dollar_with_float
 import scraper
 import data_io
 import engineer_features
@@ -71,8 +71,8 @@ def check_job_search_term(job_name: str, exemptions: int = 1, marital_status: st
         data_io.write_list_to_csv(bad_queries, bad_query_list_file_name)
         return False
 
-def get_job_salary_file_name(job_name: str, examptions: int = 1, marital_status: str = 'single'):
-    return f'salaries_{job_name}-{marital_status}-{exemption_amount}e.csv'
+def get_job_salary_file_name(job_name: str, exemptions: int = 1, marital_status: str = 'single'):
+    return f'salaries_{job_name}-{marital_status}-{exemptions}e.csv'
 
 
 # unsure if this fully works!

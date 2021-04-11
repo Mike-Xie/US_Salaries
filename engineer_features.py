@@ -13,7 +13,6 @@ def engineer_features(base_salary_table: pd.DataFrame, ppp_table: pd.DataFrame, 
 
     # need State initials because taxee_api and dash both use them 
     salary_table_with_ppp['State Initial'] = salary_table_with_ppp['State'].map(states.states_only)
-    salaries_by_state = dict.zip(salary_table_with_ppp['State Initial'].values.tolist()
     sal_tax_ppp = salary_table_with_ppp.merge(tax_table, on='State Initial')
 
     # create new features
