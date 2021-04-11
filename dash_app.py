@@ -33,8 +33,11 @@ app.layout = html.Div([
 ])
 
 def get_ppp_graph():
+    salary_table = retrieve_data.get_salary_table_for_job_title('programmer')
+    tax_table = retrieve_data.get_tax_all_states(salary_table, 'single', 1) # TODO: replace status/exem with selection
+    df = engineer_features(salary_table, ppp_table, tax_table) 
     return px.choropleth(
-        data_frame=retrieve_data.get_salary_table_for_job_title('programmer'),
+        data_frame=df,
         locationmode='USA-states',
         locations='State Initial',
         scope="usa",
@@ -63,7 +66,7 @@ def update_graph(search_box_input):
     if search_is_valid:
         container = "Showing {} salaries.".format(search_box_input)
         salary_table = retrieve_data.get_salary_table_for_job_title(search_box_input)
-        tax_table = retrieve_data.get_tax_all_states(salary_table, marital_status, exemptions)
+        tax_table = retrieve_data.get_tax_all_states(salary_table, 'single', 1) # TODO: replace status/exem with selection
         df = engineer_features(salary_table, ppp_table, tax_table) 
         valid_entries.append(search_box_input)
     # empty search box, show ppp map:
