@@ -1,5 +1,6 @@
 from debug_tools import *
 import retrieve_data
+from engineer_features import engineer_features
 
 import pandas as pd
 import plotly.express as px  # (version 4.7.0)
@@ -56,12 +57,14 @@ def get_ppp_graph():
     ],
 )
 def update_graph(search_box_input):
-    # dprint(search_box_input)
+    ppp_table = retrieve_data.get_ppp_table()
+
     search_is_valid = retrieve_data.check_job_search_term(search_box_input) if search_box_input else False
     if search_is_valid:
-        # dprint(f'search {search_box_input} is valid')
         container = "Showing {} salaries.".format(search_box_input)
-        df = retrieve_data.get_salary_table_for_job_title(search_box_input)
+        salary_table = retrieve_data.get_salary_table_for_job_title(search_box_input)
+        tax_table = retrieve_data.get_tax_all_states(salary_table, marital_status, exemptions)
+        df = engineer_features(salary_table, ppp_table, tax_table) 
         valid_entries.append(search_box_input)
     # empty search box, show ppp map:
     elif not search_box_input:
@@ -72,7 +75,9 @@ def update_graph(search_box_input):
     # search box is invalid and most recent working graph wasn't ppp map:
     elif valid_entries[-1] != valid_entries[0]:
         container = "No data for {} salaries, showing median salary for {}.".format(search_box_input, valid_entries[-1])
-        df = retrieve_data.get_salary_table_for_job_title(valid_entries[-1]) 
+        salary_table = retrieve_data.get_salary_table_for_job_title(valid_entries[-1])
+        tax_table = retrieve_data.get_tax_all_states(salary_table, marital_status, exemptions)
+        df = engineer_features(salary_table, ppp_table, tax_table)
     # search box is invalid and most recent working graph *was* ppp map:
     else:
         container = "No data for {} salaries, showing median salary for {}.".format(search_box_input, valid_entries[-1])
