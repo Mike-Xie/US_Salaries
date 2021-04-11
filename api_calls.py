@@ -37,11 +37,5 @@ def get_yearly_income_tax_from_api(state_initial: str, yearly_gross_income: int,
     df['State Initial'] = state_initial
     df['State'] = ussat.states_only_reverse[state_initial]
     
-    # dprint(df.columns)
     return df
-
-# def get_yearly_income_tax_all_states(marital_status: str, yearly_gross_income: int, exemption_amount: int, num_pay_periods: int = 1):
-#     df = pd.DataFrame()
-#     for state in ussat.states_only:
-#         df = df.append(get_yearly_income_tax_from_api(ussat.states_only[state],marital_status,yearly_gross_income,exemption_amount,num_pay_periods))
-#     return df
+    
