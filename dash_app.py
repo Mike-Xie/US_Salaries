@@ -34,6 +34,7 @@ app.layout = html.Div([
 
 def get_ppp_graph():
     salary_table = retrieve_data.get_salary_table_for_job_title('programmer')
+    ppp_table = retrieve_data.get_ppp_table()
     tax_table = retrieve_data.get_tax_all_states(salary_table, 'single', 1) # TODO: replace status/exem with selection
     df = engineer_features(salary_table, ppp_table, tax_table) 
     return px.choropleth(
@@ -79,7 +80,7 @@ def update_graph(search_box_input):
     elif valid_entries[-1] != valid_entries[0]:
         container = "No data for {} salaries, showing median salary for {}.".format(search_box_input, valid_entries[-1])
         salary_table = retrieve_data.get_salary_table_for_job_title(valid_entries[-1])
-        tax_table = retrieve_data.get_tax_all_states(salary_table, marital_status, exemptions)
+        tax_table = retrieve_data.get_tax_all_states(salary_table) #, marital_status, exemptions) TODO: implement with these options
         df = engineer_features(salary_table, ppp_table, tax_table)
     # search box is invalid and most recent working graph *was* ppp map:
     else:
@@ -93,7 +94,7 @@ def update_graph(search_box_input):
         locations='State Initial',
         scope="usa",
         color='Post Tax Annual Salary',
-        hover_data=['State Initial', 'Post Tax Annual Salary'],
+        hover_data=['State Initial', 'Annual Salary Rounded', 'Post Tax Annual Salary'],
         color_continuous_scale=px.colors.sequential.YlOrRd,
         labels={'Post Tax Annual Salary': 'Post Tax Annual Salary'},
         template='plotly_dark'
