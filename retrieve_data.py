@@ -94,13 +94,15 @@ def get_income_tax(state:str, annual_salary:int, exemptions:int = 1, marital_sta
         # if file does exist, read it into tax_cache_df and check if it contains the data
         tax_cache_df = data_io.read_df(tax_cache_name)
     else:
-        tax_cache_df = pd.DataFrame(columns=['annual.fica.amount','annual.federal.amount','annual.state.amount','State Initial','State','Annual Salary'])
+        tax_cache_df = pd.DataFrame(columns=['annual.fica.amount','annual.federal.amount','annual.state.amount','State Initial','State','Annual Salary', 'Marital Status', 'Exemptions'])
 
     # create a dataframe from a row in the tax cache table where annual salary rounded to 100s and state initial are the same
     row = tax_cache_df.loc[
         (tax_cache_df['State Initial'] == state_initial) &
         (tax_cache_df['Annual Salary'] >= floor_hundred(annual_salary)) &
-        (tax_cache_df['Annual Salary'] <= floor_hundred(annual_salary) + 100)
+        (tax_cache_df['Annual Salary'] <= floor_hundred(annual_salary) + 100) &
+        (tax_cache_df['Marital Status'] == marital_status) &
+        (tax_cache_df['Exemptions'] == exemptions)
     ]
     if(not row.empty):
         # exists in cache
@@ -109,6 +111,8 @@ def get_income_tax(state:str, annual_salary:int, exemptions:int = 1, marital_sta
         # file doesn't exist or data doesn't exist in cache, so call API, append to tax_cache_df, and write to file
         row = api_calls.get_yearly_income_tax_from_api(state_initial, annual_salary, exemptions, marital_status)
         row.insert(len(row.columns), 'Annual Salary', annual_salary)
+        row.insert(len(row.columns), 'Marital Status', marital_status)
+        row.insert(len(row.columns), 'Exemptions', exemptions)
         tax_cache_df = tax_cache_df.append(row)
         data_io.write_df(tax_cache_df, tax_cache_name)
         return row
