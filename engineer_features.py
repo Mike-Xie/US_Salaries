@@ -13,7 +13,6 @@ def engineer_features(base_salary_table: pd.DataFrame, ppp_table: pd.DataFrame, 
     # need State initials because taxee_api and dash both use them 
     salary_table_with_ppp['State Initial'] = salary_table_with_ppp['State'].map(states.states_only)
     sal_tax_ppp = salary_table_with_ppp.merge(tax_table, on=['State Initial', 'State', 'Annual Salary'])
-    dprint(sal_tax_ppp.head())
 
     # create new features
     sal_tax_ppp['Total Annual Tax'] = sal_tax_ppp['annual.fica.amount'] + sal_tax_ppp['annual.federal.amount'] + sal_tax_ppp['annual.state.amount']
