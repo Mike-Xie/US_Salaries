@@ -17,15 +17,44 @@ app = dash.Dash(__name__)
 # ------------------------------------------------------------------------------
 # App layout
 app.layout = html.Div([
-    html.H1("Salary Adjusted by Purchasing Price Parity", style={'text-align': 'center'}),
-    html.Div([dcc.Input(
-        id="job_title_search",
-        type="search",
-        placeholder="job title",
-        debounce=True,
-        style={'text-align':'center'},
-        )],
-        style={'text-align':'center'},
+    html.H1("Salaries by Profession After Tax", style={'text-align': 'center'}),
+    html.Div([
+        html.Span(
+            [dcc.Input(
+                id="job_title_search",
+                type="search",
+                placeholder="job title",
+                debounce=True,
+                style={'text-align':'center'},
+            )],
+        ),
+        html.Span(style={'padding-left':'10px'}),
+        html.Span(
+            [dcc.Input(
+                id="exemptions",
+                type="number",
+                placeholder="exemptions (1 by default)",
+                debounce=True,
+                style={'text-align':'center'},
+            )]
+        ),
+        html.Span(style={'padding-left':'10px'}),
+        html.Span(
+            [html.Div(
+                [dcc.Dropdown(
+                    id='marital_status',
+                    options=[
+                        {'label': 'Single', 'value': 'single'},
+                        {'label': 'Married', 'value': 'married'},
+                    ],
+                    value='single',
+                    clearable=False,
+                ),],
+                style={'width':'200%'}
+            )],
+        ),
+    ], 
+    style={'justify-content':'center', 'align-items':'center','display':'flex'},
     ),
     html.H3(id='job_title_label', children=[], style={'text-align': 'center'}),
     html.Br(),
@@ -42,10 +71,10 @@ def get_ppp_graph():
         locationmode='USA-states',
         locations='State Initial',
         scope="usa",
-        color='Post Tax Annual Salary',
-        hover_data=['State Initial', 'Annual Salary Rounded', 'Post Tax Annual Salary'],
+        color='Annual Mean Wage (All Occupations)',
+        hover_data=['State Initial', 'Annual Mean Wage (All Occupations)'],
         color_continuous_scale=px.colors.sequential.YlOrRd,
-        labels={'Post Tax Annual Salary': 'Annual Take-Home Salary'},
+        labels={'Annual Mean Wage (All Occupations)': 'Annual Mean Wage (All Occupations)'},
         template='plotly_dark'
     )
 
